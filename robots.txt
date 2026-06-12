@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://taku0826.github.io/tsubaki-estimate/sitemap.xml

@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ツバキ見積書 — 無料・登録不要の見積書・納品書作成ツール</title>
+<meta name="description" content="登録不要・完全無料の見積書・納品書ジェネレーター。ワンクリックで見積書と納品書を切り替え、税率別消費税(10%/8%)の自動計算、朱印スタンプ付き。データはどこにも送信されない完全ローカル動作で、ブラウザだけで見積書PDFが作れます。">
+<link rel="canonical" href="https://taku0826.github.io/tsubaki-estimate/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="ツバキ見積書 — 無料・登録不要の見積書・納品書作成ツール">
+<meta property="og:description" content="登録不要・完全無料。見積書と納品書を1画面で切替、データはどこにも送信されない完全ローカル動作のジェネレーター。">
+<meta property="og:url" content="https://taku0826.github.io/tsubaki-estimate/">
+<meta property="og:site_name" content="ツバキ見積書">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ツバキ見積書 — 無料・登録不要の見積書・納品書作成ツール">
+<meta name="twitter:description" content="登録不要・完全無料。見積書と納品書を1画面で切替、データはどこにも送信されない完全ローカル動作のジェネレーター。">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "ツバキ見積書",
+  "url": "https://taku0826.github.io/tsubaki-estimate/",
+  "description": "登録不要・完全無料の見積書・納品書ジェネレーター。データはどこにも送信されない完全ローカル動作。",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Any",
+  "inLanguage": "ja",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "JPY" }
+}
+</script>
+<style>
+  :root{
+    --ai: #1B2A4A;        /* 藍(シリーズ共通ベース) */
+    --ai-deep: #11203B;
+    --beni: #9D2235;      /* 紅(椿のアクセント) */
+    --shu: #C73E2D;       /* 朱(印鑑) */
+    --washi: #F7F8F6;
+    --kami: #FFFFFF;
+    --sumi: #23272E;
+    --usuzumi: #6B7280;
+    --keisen: #D7DCE3;
+    --radius: 10px;
+  }
+  *{ box-sizing: border-box; margin: 0; padding: 0; }
+  html,body{ height:100%; }
+  body{
+    font-family: "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Yu Gothic", "Noto Sans JP", "Meiryo", sans-serif;
+    background: var(--washi);
+    color: var(--sumi);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* ===== ヘッダー ===== */
+  header.app{
+    background: var(--ai);
+    color: #fff;
+    padding: 14px 24px;
+    display:flex; align-items:center; justify-content:space-between; gap:16px;
+    flex-wrap: wrap;
+  }
+  .brand{ display:flex; align-items:baseline; gap:10px; }
+  .brand h1{ font-size: 18px; font-weight: 700; letter-spacing: .08em; }
+  .brand span{ font-size: 11px; opacity:.75; letter-spacing:.05em; }
+  .header-actions{ display:flex; gap:10px; }
+  button{
+    font-family: inherit; font-size: 13px; cursor:pointer;
+    border:none; border-radius: 6px; padding: 9px 16px;
+    transition: filter .15s ease;
+  }
+  button:hover{ filter: brightness(1.08); }
+  button:focus-visible{ outline: 2px solid #fff; outline-offset: 2px; }
+  .btn-print{ background: var(--beni); color:#fff; font-weight:700; letter-spacing:.04em; }
+  .btn-ghost{ background: rgba(255,255,255,.12); color:#fff; }
+
+  /* ===== レイアウト ===== */
+  .wrap{
+    display:grid; grid-template-columns: 380px 1fr;
+    gap: 24px; padding: 24px; max-width: 1280px; margin: 0 auto;
+  }
+  @media (max-width: 920px){ .wrap{ grid-template-columns: 1fr; } }
+
+  /* ===== 入力フォーム ===== */
+  .panel{
+    background: var(--kami);
+    border: 1px solid var(--keisen);
+    border-radius: var(--radius);
+    padding: 18px;
+  }
+  .panel + .panel{ margin-top: 16px; }
+  .panel h2{
+    font-size: 12px; color: var(--ai); letter-spacing: .15em;
+    border-left: 3px solid var(--beni); padding-left: 8px; margin-bottom: 12px;
+  }
+  .field{ margin-bottom: 10px; }
+  .field label{ display:block; font-size: 11px; color: var(--usuzumi); margin-bottom: 3px; }
+  .field input, .field textarea, .field select{
+    width:100%; font-family:inherit; font-size: 13px;
+    border:1px solid var(--keisen); border-radius:6px; padding: 7px 9px;
+    background:#FDFDFC; color: var(--sumi);
+  }
+  .field input:focus, .field textarea:focus, .field select:focus{
+    outline: 2px solid var(--ai); outline-offset: 0; border-color: var(--ai);
+  }
+  .row2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .hint{ font-size:11px; color:var(--usuzumi); margin-top:4px; }
+
+  /* 書類タイプ切替 */
+  .doc-switch{
+    display:grid; grid-template-columns: 1fr 1fr; gap: 0;
+    border:1px solid var(--keisen); border-radius: 8px; overflow:hidden;
+  }
+  .doc-switch label{
+    display:block; text-align:center; padding: 10px 0;
+    font-size: 14px; font-weight: 600; cursor:pointer;
+    background: var(--washi); color: var(--usuzumi);
+    transition: background .15s ease, color .15s ease;
+  }
+  .doc-switch input{ position:absolute; opacity:0; pointer-events:none; }
+  .doc-switch input:checked + label{
+    background: var(--beni); color:#fff;
+  }
+  .doc-switch input:focus-visible + label{ outline: 2px solid var(--ai); outline-offset: -2px; }
+
+  /* 明細入力 */
+  .item-row{
+    display:grid; grid-template-columns: 1fr 56px 84px 64px 28px;
+    gap:6px; margin-bottom:6px; align-items:center;
+  }
+  .item-row input, .item-row select{
+    font-family:inherit; font-size:12px; border:1px solid var(--keisen);
+    border-radius:5px; padding:6px 7px; background:#FDFDFC; width:100%;
+  }
+  .item-head{ font-size:10px; color:var(--usuzumi); }
+  .del{
+    background:none; color:var(--usuzumi); font-size:16px; padding:2px;
+    border-radius:4px; line-height:1;
+  }
+  .del:hover{ color:var(--beni); }
+  .add-item{
+    width:100%; background: var(--washi); color: var(--ai);
+    border:1px dashed var(--keisen); font-weight:600; margin-top:4px;
+  }
+  .stamp-toggle{ display:flex; align-items:center; gap:8px; font-size:13px; }
+  .stamp-toggle input{ width:16px; height:16px; accent-color: var(--shu); }
+
+  /* モード別表示 */
+  body.mode-mitsu .only-nohin{ display:none !important; }
+  body.mode-nohin .only-mitsu{ display:none !important; }
+
+  /* ===== プレビュー(書面本体)===== */
+  .preview-area{ position: relative; }
+  .sheet{
+    background: #fff;
+    width: 100%; max-width: 800px; margin: 0 auto;
+    padding: 48px 52px;
+    border: 1px solid var(--keisen);
+    border-radius: 4px;
+    box-shadow: 0 2px 14px rgba(27,42,74,.08);
+    position: relative;
+  }
+  .sheet .title{
+    text-align:center; font-size: 26px; letter-spacing: 1.2em;
+    text-indent: 1.2em; /* 字間を均等に見せる */
+    color: var(--sumi); font-weight: 600;
+    border-bottom: 2px solid var(--sumi);
+    padding-bottom: 10px; margin-bottom: 28px;
+  }
+  .meta-top{ display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 26px; }
+  .to-block .to-name{
+    font-size: 18px; font-weight: 600;
+    border-bottom: 1px solid var(--sumi);
+    padding-bottom: 4px; margin-bottom: 6px; min-width: 260px;
+  }
+  .to-block .to-addr{ font-size: 12px; color: var(--sumi); white-space: pre-line; }
+  .to-block .lead{ font-size: 12px; margin-top: 10px; }
+  .from-block{ text-align: left; font-size: 12px; position: relative; }
+  .from-block .doc-meta{ margin-bottom: 14px; font-size: 12px; }
+  .from-block .doc-meta div{ display:flex; justify-content:space-between; gap: 18px; }
+  .from-block .doc-meta span:first-child{ color: var(--usuzumi); }
+  .from-name{ font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+  .from-detail{ white-space: pre-line; }
+  .reg-no{ margin-top: 4px; font-size: 12px; }
+
+  /* 朱印スタンプ:このツールの署名要素 */
+  .hanko{
+    position: absolute; right: -6px; bottom: -14px;
+    width: 64px; height: 64px;
+    border: 2.5px solid var(--shu);
+    border-radius: 50%;
+    color: var(--shu);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; font-weight: 700;
+    writing-mode: vertical-rl;
+    letter-spacing: .1em;
+    transform: rotate(4deg);
+    opacity: .88;
+    mix-blend-mode: multiply;
+    background:
+      radial-gradient(circle at 30% 30%, rgba(199,62,45,.06), transparent 60%);
+    overflow: hidden;
+    padding: 4px;
+    text-align: center;
+    line-height: 1.1;
+  }
+  .hanko.hidden{ display:none; }
+
+  .amount-line{
+    display:flex; align-items: baseline; gap: 18px;
+    border-bottom: 2px solid var(--sumi);
+    padding-bottom: 6px; margin-bottom: 18px;
+    max-width: 420px;
+  }
+  .amount-line .lbl{ font-size: 13px; }
+  .amount-line .val{ font-size: 26px; font-weight: 700; letter-spacing: .02em; }
+  .amount-line .tax-note{ font-size: 11px; color: var(--usuzumi); }
+
+  /* お取引条件(見積)/ 納品情報(納品) */
+  .conds{ font-size: 12px; margin-bottom: 22px; }
+  .conds div{ display:flex; gap: 12px; padding: 2px 0; }
+  .conds span:first-child{
+    color: var(--usuzumi); min-width: 7em;
+  }
+
+  table.items{
+    width: 100%; border-collapse: collapse; margin-bottom: 18px;
+    font-size: 13px;
+  }
+  table.items th{
+    background: var(--ai); color: #fff; font-weight: 600;
+    padding: 8px 10px; font-size: 12px; letter-spacing: .05em;
+  }
+  table.items td{
+    border-bottom: 1px solid var(--keisen);
+    padding: 8px 10px;
+  }
+  .ta-r{ text-align: right; }
+  .ta-c{ text-align: center; }
+  .totals{
+    width: 320px; margin-left: auto; font-size: 13px;
+    border-top: 1px solid var(--sumi);
+    margin-bottom: 26px;
+  }
+  .totals div{
+    display:flex; justify-content: space-between;
+    padding: 6px 8px; border-bottom: 1px solid var(--keisen);
+  }
+  .totals .grand{
+    font-weight: 700; font-size: 15px;
+    background: var(--washi);
+    border-bottom: 2px solid var(--sumi);
+  }
+  .totals .sub-tax{ font-size: 12px; color: var(--usuzumi); }
+
+  .notes-block h3{
+    font-size: 12px; color: var(--ai); letter-spacing:.1em;
+    border-left: 3px solid var(--beni); padding-left: 8px; margin-bottom: 6px;
+  }
+  .notes-block{ margin-bottom: 18px; }
+  .notes-block p{ font-size: 13px; white-space: pre-line; }
+  footer.credit{
+    text-align:center; font-size: 11px; color: var(--usuzumi);
+    padding: 18px 0 30px;
+  }
+  footer.credit a{ color: var(--ai); }
+
+  /* ===== 印刷 ===== */
+  @media print{
+    body{ background:#fff; }
+    header.app, .form-col, footer.credit{ display:none !important; }
+    .wrap{ display:block; padding:0; max-width:none; }
+    .sheet{
+      box-shadow:none; border:none; border-radius:0;
+      max-width:none; width:100%; padding: 10mm 12mm;
+    }
+  }
+  @page{ size: A4; margin: 8mm; }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ transition: none !important; }
+  }
+</style>
+</head>
+<body class="mode-mitsu">
+
+<header class="app">
+  <div class="brand">
+    <h1>ツバキ見積書</h1>
+    <span>見積書・納品書を1画面で切替・登録不要・無料</span>
+  </div>
+  <div class="header-actions">
+    <button class="btn-ghost" id="btnSample">サンプルを入れる</button>
+    <button class="btn-print" id="btnPrint">印刷 / PDF保存</button>
+  </div>
+</header>
+
+<div class="wrap">
+  <!-- ===== 入力列 ===== -->
+  <div class="form-col">
+
+    <div class="panel">
+      <h2>書類の種類</h2>
+      <div class="doc-switch">
+        <input type="radio" name="docType" id="typeMitsu" value="mitsu" checked>
+        <label for="typeMitsu">見積書</label>
+        <input type="radio" name="docType" id="typeNohin" value="nohin">
+        <label for="typeNohin">納品書</label>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>基本情報</h2>
+      <div class="row2">
+        <div class="field">
+          <label for="docNo" id="lblDocNo">見積書番号</label>
+          <input id="docNo" data-bind placeholder="EST-2026-001">
+        </div>
+        <div class="field">
+          <label for="docDate">発行日</label>
+          <input id="docDate" data-bind type="date">
+        </div>
+      </div>
+      <div class="field only-mitsu">
+        <label for="validity">有効期限</label>
+        <input id="validity" data-bind placeholder="発行日より30日間">
+        <p class="hint">日付でも「発行日より◯日間」でもOK。</p>
+      </div>
+      <div class="row2 only-nohin">
+        <div class="field">
+          <label for="deliveryDate">納品日</label>
+          <input id="deliveryDate" data-bind type="date">
+        </div>
+        <div class="field">
+          <label for="deliveryPlace">納品場所</label>
+          <input id="deliveryPlace" data-bind placeholder="貴社指定場所">
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>宛先</h2>
+      <div class="field">
+        <label for="toName">宛名(会社名・氏名)</label>
+        <input id="toName" data-bind placeholder="株式会社サンプル商事">
+      </div>
+      <div class="field">
+        <label for="toSuffix">敬称</label>
+        <select id="toSuffix" data-bind>
+          <option value="御中">御中</option>
+          <option value="様">様</option>
+          <option value="">(なし)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="toAddr">住所など(任意)</label>
+        <textarea id="toAddr" data-bind rows="2" placeholder="〒530-0001 大阪市北区..."></textarea>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>発行者(あなた)</h2>
+      <div class="field">
+        <label for="fromName">名前・屋号</label>
+        <input id="fromName" data-bind placeholder="山田 太郎">
+      </div>
+      <div class="field">
+        <label for="fromDetail">住所・連絡先</label>
+        <textarea id="fromDetail" data-bind rows="3" placeholder="〒530-0001 大阪市北区...
+TEL: 090-0000-0000
+mail@example.com"></textarea>
+      </div>
+      <div class="field">
+        <label for="regNo">適格請求書発行事業者 登録番号(任意)</label>
+        <input id="regNo" data-bind placeholder="T1234567890123">
+        <p class="hint">T + 数字13桁。空欄なら記載されません。</p>
+      </div>
+      <div class="stamp-toggle">
+        <input type="checkbox" id="stampOn" checked>
+        <label for="stampOn">朱印スタンプを押す(姓を自動表示)</label>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>明細</h2>
+      <div class="item-row item-head">
+        <span>品目</span><span>数量</span><span>単価</span><span>税率</span><span></span>
+      </div>
+      <div id="items"></div>
+      <button class="add-item" id="btnAdd">+ 行を追加</button>
+    </div>
+
+    <div class="panel only-mitsu">
+      <h2>お取引条件(任意)</h2>
+      <div class="field">
+        <label for="dueTerm">受渡期日(納期)</label>
+        <input id="dueTerm" data-bind placeholder="ご発注後 2週間">
+      </div>
+      <div class="field">
+        <label for="placeTerm">受渡場所</label>
+        <input id="placeTerm" data-bind placeholder="貴社指定場所">
+      </div>
+      <div class="field">
+        <label for="payTerm">お支払条件</label>
+        <input id="payTerm" data-bind placeholder="納品月末締め 翌月末払い">
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>備考</h2>
+      <div class="field">
+        <textarea id="notes" data-bind rows="2" placeholder="本見積の内容についてご不明点がございましたらお気軽にお問い合わせください。"></textarea>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== プレビュー列 ===== -->
+  <div class="preview-area">
+    <div class="sheet" id="sheet">
+      <div class="title" id="pTitle">見積書</div>
+
+      <div class="meta-top">
+        <div class="to-block">
+          <div class="to-name" id="pToName">&nbsp;</div>
+          <div class="to-addr" id="pToAddr"></div>
+          <p class="lead" id="pLead">下記の通りお見積り申し上げます。</p>
+        </div>
+        <div class="from-block">
+          <div class="doc-meta">
+            <div><span id="pDocNoLbl">見積書番号</span><span id="pDocNo">—</span></div>
+            <div><span>発行日</span><span id="pDocDate">—</span></div>
+            <div class="only-mitsu"><span>有効期限</span><span id="pValidity">—</span></div>
+            <div class="only-nohin"><span>納品日</span><span id="pDeliveryDate">—</span></div>
+          </div>
+          <div class="from-name" id="pFromName"></div>
+          <div class="from-detail" id="pFromDetail"></div>
+          <div class="reg-no" id="pRegNo"></div>
+          <div class="hanko" id="pHanko"></div>
+        </div>
+      </div>
+
+      <div class="amount-line">
+        <span class="lbl" id="pGrandLbl">御見積金額</span>
+        <span class="val" id="pGrand">¥0</span>
+        <span class="tax-note">(税込)</span>
+      </div>
+
+      <div class="conds" id="pConds"></div>
+
+      <table class="items">
+        <thead>
+          <tr>
+            <th style="text-align:left">品目</th>
+            <th class="ta-c" style="width:60px">数量</th>
+            <th class="ta-r" style="width:100px">単価</th>
+            <th class="ta-c" style="width:60px">税率</th>
+            <th class="ta-r" style="width:110px">金額</th>
+          </tr>
+        </thead>
+        <tbody id="pItems"></tbody>
+      </table>
+
+      <div class="totals" id="pTotals"></div>
+
+      <div class="notes-block" id="pNotesBlock">
+        <h3>備考</h3>
+        <p id="pNotes"></p>
+      </div>
+    </div>
+    <footer class="credit">
+      ツバキ見積書 — ブラウザだけで動きます。入力内容はどこにも送信されません。<br>
+      姉妹ツール:<a href="https://taku0826.github.io/sumire-invoice/">スミレ請求書(インボイス対応・無料)</a>
+    </footer>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  function yen(n){
+    return "¥" + Math.round(n).toLocaleString("ja-JP");
+  }
+  function fmtDate(v){
+    if(!v) return "—";
+    var p = v.split("-");
+    return p[0] + "年" + Number(p[1]) + "月" + Number(p[2]) + "日";
+  }
+  function esc(s){
+    var d = document.createElement("div");
+    d.textContent = s;
+    return d.innerHTML;
+  }
+  function mode(){
+    return document.getElementById("typeNohin").checked ? "nohin" : "mitsu";
+  }
+
+  /* ---- 明細行 ---- */
+  var itemsEl = document.getElementById("items");
+
+  function addItem(data){
+    data = data || { name:"", qty:1, price:"", rate:10 };
+    var row = document.createElement("div");
+    row.className = "item-row";
+    row.innerHTML =
+      '<input class="i-name" placeholder="例:Webサイト制作費" value="' + esc(data.name) + '">' +
+      '<input class="i-qty" type="number" min="0" step="1" value="' + data.qty + '">' +
+      '<input class="i-price" type="number" min="0" step="1" placeholder="0" value="' + data.price + '">' +
+      '<select class="i-rate">' +
+        '<option value="10"' + (data.rate==10?" selected":"") + '>10%</option>' +
+        '<option value="8"' + (data.rate==8?" selected":"") + '>8%</option>' +
+        '<option value="0"' + (data.rate==0?" selected":"") + '>0%</option>' +
+      '</select>' +
+      '<button class="del" title="この行を削除" aria-label="この行を削除">×</button>';
+    row.querySelector(".del").addEventListener("click", function(){
+      row.remove(); render();
+    });
+    row.addEventListener("input", render);
+    itemsEl.appendChild(row);
+  }
+
+  /* ---- 集計と描画 ---- */
+  function render(){
+    var g = function(id){ return document.getElementById(id).value; };
+    var m = mode();
+
+    /* モード別の文言・表示切替 */
+    document.body.className = (m === "nohin") ? "mode-nohin" : "mode-mitsu";
+    document.getElementById("pTitle").textContent = (m === "nohin") ? "納品書" : "見積書";
+    document.title = (m === "nohin")
+      ? "ツバキ見積書 — 無料・登録不要の見積書・納品書作成ツール(納品書モード)"
+      : "ツバキ見積書 — 無料・登録不要の見積書・納品書作成ツール";
+    document.getElementById("lblDocNo").textContent = (m === "nohin") ? "納品書番号" : "見積書番号";
+    document.getElementById("pDocNoLbl").textContent = (m === "nohin") ? "納品書番号" : "見積書番号";
+    document.getElementById("docNo").placeholder = (m === "nohin") ? "DLV-2026-001" : "EST-2026-001";
+    document.getElementById("pLead").textContent = (m === "nohin")
+      ? "下記の通り納品いたしました。"
+      : "下記の通りお見積り申し上げます。";
+    document.getElementById("pGrandLbl").textContent = (m === "nohin") ? "合計金額" : "御見積金額";
+
+    document.getElementById("pDocNo").textContent  = g("docNo") || "—";
+    document.getElementById("pDocDate").textContent = fmtDate(g("docDate"));
+    document.getElementById("pValidity").textContent = g("validity") || "—";
+    document.getElementById("pDeliveryDate").textContent = fmtDate(g("deliveryDate"));
+
+    var toName = g("toName");
+    var suffix = g("toSuffix");
+    document.getElementById("pToName").textContent =
+      toName ? (toName + (suffix ? " " + suffix : "")) : " ";
+    document.getElementById("pToAddr").textContent = g("toAddr");
+
+    document.getElementById("pFromName").textContent = g("fromName");
+    document.getElementById("pFromDetail").textContent = g("fromDetail");
+
+    var reg = g("regNo").trim();
+    document.getElementById("pRegNo").textContent =
+      reg ? "登録番号:" + reg : "";
+
+    /* 朱印 */
+    var hanko = document.getElementById("pHanko");
+    var stampOn = document.getElementById("stampOn").checked;
+    var sei = (g("fromName").trim().split(/[\s ]+/)[0] || "").slice(0, 3);
+    if(stampOn && sei){
+      hanko.classList.remove("hidden");
+      hanko.textContent = sei;
+    }else{
+      hanko.classList.add("hidden");
+    }
+
+    /* お取引条件(見積)/ 納品場所(納品) */
+    var conds = document.getElementById("pConds");
+    conds.innerHTML = "";
+    var addCond = function(label, val){
+      if(!val) return;
+      var d = document.createElement("div");
+      d.innerHTML = "<span>" + label + "</span><span>" + esc(val) + "</span>";
+      conds.appendChild(d);
+    };
+    if(m === "mitsu"){
+      addCond("受渡期日", g("dueTerm"));
+      addCond("受渡場所", g("placeTerm"));
+      addCond("お支払条件", g("payTerm"));
+    }else{
+      addCond("納品場所", g("deliveryPlace"));
+    }
+    conds.style.display = conds.children.length ? "" : "none";
+
+    /* 明細 */
+    var rows = itemsEl.querySelectorAll(".item-row");
+    var tbody = document.getElementById("pItems");
+    tbody.innerHTML = "";
+    var byRate = {}; // 税率ごとの本体額
+    var subtotal = 0;
+
+    rows.forEach(function(r){
+      var name = r.querySelector(".i-name").value;
+      var qty = parseFloat(r.querySelector(".i-qty").value) || 0;
+      var price = parseFloat(r.querySelector(".i-price").value) || 0;
+      var rate = parseInt(r.querySelector(".i-rate").value, 10);
+      if(!name && !price) return;
+      var amt = qty * price;
+      subtotal += amt;
+      byRate[rate] = (byRate[rate] || 0) + amt;
+
+      var tr = document.createElement("tr");
+      tr.innerHTML =
+        "<td>" + esc(name) + (rate===8 ? ' <span style="font-size:11px;color:#6B7280">※軽減税率</span>' : "") + "</td>" +
+        '<td class="ta-c">' + qty + "</td>" +
+        '<td class="ta-r">' + yen(price) + "</td>" +
+        '<td class="ta-c">' + rate + "%</td>" +
+        '<td class="ta-r">' + yen(amt) + "</td>";
+      tbody.appendChild(tr);
+    });
+
+    /* 税率ごとに区分した消費税額(インボイス様式に準拠) */
+    var totals = document.getElementById("pTotals");
+    totals.innerHTML = "";
+    var totalTax = 0;
+    var addLine = function(label, val, cls){
+      var d = document.createElement("div");
+      if(cls) d.className = cls;
+      d.innerHTML = "<span>" + label + "</span><span>" + val + "</span>";
+      totals.appendChild(d);
+    };
+    addLine("小計(税抜)", yen(subtotal));
+    [10, 8, 0].forEach(function(rate){
+      if(byRate[rate] === undefined) return;
+      var tax = Math.floor(byRate[rate] * rate / 100);
+      totalTax += tax;
+      if(rate > 0){
+        addLine("消費税(" + rate + "%対象 " + yen(byRate[rate]) + ")", yen(tax), "sub-tax");
+      }
+    });
+    var grand = subtotal + totalTax;
+    addLine("合計(税込)", yen(grand), "grand");
+    document.getElementById("pGrand").textContent = yen(grand);
+
+    /* 備考(空なら欄ごと非表示) */
+    var notes = g("notes");
+    document.getElementById("pNotes").textContent = notes;
+    document.getElementById("pNotesBlock").style.display = notes ? "" : "none";
+  }
+
+  /* ---- イベント ---- */
+  document.querySelectorAll("[data-bind]").forEach(function(el){
+    el.addEventListener("input", render);
+    el.addEventListener("change", render);
+  });
+  document.getElementById("stampOn").addEventListener("change", render);
+  document.getElementById("typeMitsu").addEventListener("change", render);
+  document.getElementById("typeNohin").addEventListener("change", render);
+  document.getElementById("btnAdd").addEventListener("click", function(){
+    addItem(); render();
+  });
+  document.getElementById("btnPrint").addEventListener("click", function(){
+    window.print();
+  });
+
+  /* ---- サンプル ---- */
+  document.getElementById("btnSample").addEventListener("click", function(){
+    var today = new Date();
+    var iso = function(d){
+      return d.getFullYear() + "-" +
+        String(d.getMonth()+1).padStart(2,"0") + "-" +
+        String(d.getDate()).padStart(2,"0");
+    };
+    var m = mode();
+    document.getElementById("docNo").value =
+      (m === "nohin" ? "DLV-" : "EST-") + today.getFullYear() + "-001";
+    document.getElementById("docDate").value = iso(today);
+    document.getElementById("validity").value = "発行日より30日間";
+    document.getElementById("deliveryDate").value = iso(today);
+    document.getElementById("deliveryPlace").value = "貴社指定場所";
+    document.getElementById("toName").value = "株式会社サンプル商事";
+    document.getElementById("toAddr").value = "〒530-0001\n大阪市北区梅田1-1-1";
+    document.getElementById("fromName").value = "山田 太郎";
+    document.getElementById("fromDetail").value = "〒550-0002 大阪市西区江戸堀2-2-2\nTEL: 090-0000-0000\nyamada@example.com";
+    document.getElementById("regNo").value = "T1234567890123";
+    document.getElementById("dueTerm").value = "ご発注後 2週間";
+    document.getElementById("placeTerm").value = "貴社指定場所";
+    document.getElementById("payTerm").value = "納品月末締め 翌月末払い";
+    document.getElementById("notes").value = (m === "nohin")
+      ? "上記の通り納品いたしました。ご査収のほどよろしくお願いいたします。"
+      : "本見積の内容についてご不明点がございましたらお気軽にお問い合わせください。";
+    itemsEl.innerHTML = "";
+    addItem({ name:"Webサイト制作費", qty:1, price:150000, rate:10 });
+    addItem({ name:"保守サポート(6月分)", qty:1, price:20000, rate:10 });
+    addItem({ name:"打ち合わせ茶菓子代(実費)", qty:1, price:1500, rate:8 });
+    render();
+  });
+
+  /* ---- 初期化 ---- */
+  var t = new Date();
+  document.getElementById("docDate").value =
+    t.getFullYear() + "-" + String(t.getMonth()+1).padStart(2,"0") + "-" + String(t.getDate()).padStart(2,"0");
+  addItem(); addItem();
+  render();
+})();
+</script>
+</body>
+</html>
