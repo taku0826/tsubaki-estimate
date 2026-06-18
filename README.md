@@ -35,6 +35,7 @@
 - 🌸 [スミレ請求書](https://taku0826.github.io/sumire-invoice/) — インボイス制度対応の請求書ジェネレーター
 - 🌼 [アサガオ領収書](https://taku0826.github.io/asagao-receipt/) — 領収書ジェネレーター(収入印紙欄の自動判定)
 - 🌸 [ナデシコ源泉徴収計算機](https://taku0826.github.io/nadeshiko-tax/) — 報酬税額・手取りの計算、逆算も
+- 🌸 [コスモス経費メモ帳](https://taku0826.github.io/kosmos-keihi/) — 経費を記録・カテゴリ別集計、CSV書き出しも
 
 「見積 → 納品 → 請求 → 領収」の流れを、すべて無料・登録不要でカバーできます。
 
