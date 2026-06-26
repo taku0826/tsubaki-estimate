@@ -32,10 +32,10 @@
 </script>
 <style>
   :root{
-    --ai: #1B2A4A;        /* 藍(シリーズ共通ベース) */
+    --ai: #1B2A4A;
     --ai-deep: #11203B;
-    --beni: #9D2235;      /* 紅(椿のアクセント) */
-    --shu: #C73E2D;       /* 朱(印鑑) */
+    --beni: #9D2235;
+    --shu: #C73E2D;
     --washi: #F7F8F6;
     --kami: #FFFFFF;
     --sumi: #23272E;
@@ -53,7 +53,6 @@
     line-height: 1.6;
   }
 
-  /* ===== ヘッダー ===== */
   header.app{
     background: var(--ai);
     color: #fff;
@@ -75,14 +74,12 @@
   .btn-print{ background: var(--beni); color:#fff; font-weight:700; letter-spacing:.04em; }
   .btn-ghost{ background: rgba(255,255,255,.12); color:#fff; }
 
-  /* ===== レイアウト ===== */
   .wrap{
     display:grid; grid-template-columns: 380px 1fr;
     gap: 24px; padding: 24px; max-width: 1280px; margin: 0 auto;
   }
   @media (max-width: 920px){ .wrap{ grid-template-columns: 1fr; } }
 
-  /* ===== 入力フォーム ===== */
   .panel{
     background: var(--kami);
     border: 1px solid var(--keisen);
@@ -107,7 +104,6 @@
   .row2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
   .hint{ font-size:11px; color:var(--usuzumi); margin-top:4px; }
 
-  /* 書類タイプ切替 */
   .doc-switch{
     display:grid; grid-template-columns: 1fr 1fr; gap: 0;
     border:1px solid var(--keisen); border-radius: 8px; overflow:hidden;
@@ -124,7 +120,6 @@
   }
   .doc-switch input:focus-visible + label{ outline: 2px solid var(--ai); outline-offset: -2px; }
 
-  /* 明細入力 */
   .item-row{
     display:grid; grid-template-columns: 1fr 56px 84px 64px 28px;
     gap:6px; margin-bottom:6px; align-items:center;
@@ -146,11 +141,9 @@
   .stamp-toggle{ display:flex; align-items:center; gap:8px; font-size:13px; }
   .stamp-toggle input{ width:16px; height:16px; accent-color: var(--shu); }
 
-  /* モード別表示 */
   body.mode-mitsu .only-nohin{ display:none !important; }
   body.mode-nohin .only-mitsu{ display:none !important; }
 
-  /* ===== プレビュー(書面本体)===== */
   .preview-area{ position: relative; }
   .sheet{
     background: #fff;
@@ -163,7 +156,7 @@
   }
   .sheet .title{
     text-align:center; font-size: 26px; letter-spacing: 1.2em;
-    text-indent: 1.2em; /* 字間を均等に見せる */
+    text-indent: 1.2em;
     color: var(--sumi); font-weight: 600;
     border-bottom: 2px solid var(--sumi);
     padding-bottom: 10px; margin-bottom: 28px;
@@ -184,7 +177,6 @@
   .from-detail{ white-space: pre-line; }
   .reg-no{ margin-top: 4px; font-size: 12px; }
 
-  /* 朱印スタンプ:このツールの署名要素 */
   .hanko{
     position: absolute; right: -6px; bottom: -14px;
     width: 64px; height: 64px;
@@ -217,7 +209,6 @@
   .amount-line .val{ font-size: 26px; font-weight: 700; letter-spacing: .02em; }
   .amount-line .tax-note{ font-size: 11px; color: var(--usuzumi); }
 
-  /* お取引条件(見積)/ 納品情報(納品) */
   .conds{ font-size: 12px; margin-bottom: 22px; }
   .conds div{ display:flex; gap: 12px; padding: 2px 0; }
   .conds span:first-child{
@@ -266,7 +257,6 @@
   }
   footer.credit a{ color: var(--ai); }
 
-  /* ===== 印刷 ===== */
   @media print{
     body{ background:#fff; }
     header.app, .form-col, footer.credit{ display:none !important; }
@@ -297,7 +287,6 @@
 </header>
 
 <div class="wrap">
-  <!-- ===== 入力列 ===== -->
   <div class="form-col">
 
     <div class="panel">
@@ -324,8 +313,8 @@
       </div>
       <div class="field only-mitsu">
         <label for="validity">有効期限</label>
-        <input id="validity" data-bind placeholder="発行日より30日間">
-        <p class="hint">日付でも「発行日より◯日間」でもOK。</p>
+        <input id="validity" data-bind placeholder="発行日よら30日間">
+        <p class="hint">日付でも「発行日より○日間」でもOK。</p>
       </div>
       <div class="row2 only-nohin">
         <div class="field">
@@ -416,7 +405,6 @@ mail@example.com"></textarea>
 
   </div>
 
-  <!-- ===== プレビュー列 ===== -->
   <div class="preview-area">
     <div class="sheet" id="sheet">
       <div class="title" id="pTitle">見積書</div>
@@ -485,7 +473,7 @@ mail@example.com"></textarea>
     </div>
     <footer class="credit">
       ツバキ見積書 — ブラウザだけで動きます。入力内容はどこにも送信されません。<br>
-      姉妹ツール:<a href="https://taku0826.github.io/kikyo-order/">キキョウ発注書</a> / <a href="https://taku0826.github.io/sumire-invoice/">スミレ請求書(インボイス対応)</a> / <a href="https://taku0826.github.io/asagao-receipt/">アサガオ領収書</a> / <a href="https://taku0826.github.io/nadeshiko-tax/">ナデシコ源泉徴収計算機</a> / <a href="https://taku0826.github.io/kosmos-keihi/">コスモス経費メモ帳</a><br>
+      姉妹ツール:<a href="https://taku0826.github.io/kikyo-order/">キキョウ発注書</a> / <a href="https://taku0826.github.io/sumire-invoice/">スミレ請求書(インボイス対応)</a> / <a href="https://taku0826.github.io/asagao-receipt/">アサガオ領収書</a> / <a href="https://taku0826.github.io/nadeshiko-tax/">ナデシコ源泉徴収計算機</a> / <a href="https://taku0826.github.io/kosmos-keihi/">コスモス経費メモ帳</a> / <a href="https://taku0826.github.io/sumiredo-portal/samples/auto-report/">売上CSV自動集計</a><br>
       <a href="https://taku0826.github.io/sumiredo-portal/">🌸 すみれ堂 — 道具一覧はこちら</a> ／ <a href="https://coconala.com/services/4269975" target="_blank" rel="noopener">専用版の制作依頼(ココナラ)</a>
     </footer>
   </div>
@@ -512,7 +500,6 @@ mail@example.com"></textarea>
     return document.getElementById("typeNohin").checked ? "nohin" : "mitsu";
   }
 
-  /* ---- 明細行 ---- */
   var itemsEl = document.getElementById("items");
 
   function addItem(data){
@@ -536,12 +523,10 @@ mail@example.com"></textarea>
     itemsEl.appendChild(row);
   }
 
-  /* ---- 集計と描画 ---- */
   function render(){
     var g = function(id){ return document.getElementById(id).value; };
     var m = mode();
 
-    /* モード別の文言・表示切替 */
     document.body.className = (m === "nohin") ? "mode-nohin" : "mode-mitsu";
     document.getElementById("pTitle").textContent = (m === "nohin") ? "納品書" : "見積書";
     document.title = (m === "nohin")
@@ -573,7 +558,6 @@ mail@example.com"></textarea>
     document.getElementById("pRegNo").textContent =
       reg ? "登録番号:" + reg : "";
 
-    /* 朱印 */
     var hanko = document.getElementById("pHanko");
     var stampOn = document.getElementById("stampOn").checked;
     var sei = (g("fromName").trim().split(/[\s ]+/)[0] || "").slice(0, 3);
@@ -584,7 +568,6 @@ mail@example.com"></textarea>
       hanko.classList.add("hidden");
     }
 
-    /* お取引条件(見積)/ 納品場所(納品) */
     var conds = document.getElementById("pConds");
     conds.innerHTML = "";
     var addCond = function(label, val){
@@ -602,11 +585,10 @@ mail@example.com"></textarea>
     }
     conds.style.display = conds.children.length ? "" : "none";
 
-    /* 明細 */
     var rows = itemsEl.querySelectorAll(".item-row");
     var tbody = document.getElementById("pItems");
     tbody.innerHTML = "";
-    var byRate = {}; // 税率ごとの本体額
+    var byRate = {};
     var subtotal = 0;
 
     rows.forEach(function(r){
@@ -629,7 +611,6 @@ mail@example.com"></textarea>
       tbody.appendChild(tr);
     });
 
-    /* 税率ごとに区分した消費税額(インボイス様式に準拠) */
     var totals = document.getElementById("pTotals");
     totals.innerHTML = "";
     var totalTax = 0;
@@ -652,13 +633,11 @@ mail@example.com"></textarea>
     addLine("合計(税込)", yen(grand), "grand");
     document.getElementById("pGrand").textContent = yen(grand);
 
-    /* 備考(空なら欄ごと非表示) */
     var notes = g("notes");
     document.getElementById("pNotes").textContent = notes;
     document.getElementById("pNotesBlock").style.display = notes ? "" : "none";
   }
 
-  /* ---- イベント ---- */
   document.querySelectorAll("[data-bind]").forEach(function(el){
     el.addEventListener("input", render);
     el.addEventListener("change", render);
@@ -673,7 +652,6 @@ mail@example.com"></textarea>
     window.print();
   });
 
-  /* ---- サンプル ---- */
   document.getElementById("btnSample").addEventListener("click", function(){
     var today = new Date();
     var iso = function(d){
@@ -685,7 +663,7 @@ mail@example.com"></textarea>
     document.getElementById("docNo").value =
       (m === "nohin" ? "DLV-" : "EST-") + today.getFullYear() + "-001";
     document.getElementById("docDate").value = iso(today);
-    document.getElementById("validity").value = "発行日より30日間";
+    document.getElementById("validity").value = "発行日よら30日間";
     document.getElementById("deliveryDate").value = iso(today);
     document.getElementById("deliveryPlace").value = "貴社指定場所";
     document.getElementById("toName").value = "株式会社サンプル商事";
@@ -706,7 +684,6 @@ mail@example.com"></textarea>
     render();
   });
 
-  /* ---- 初期化 ---- */
   var t = new Date();
   document.getElementById("docDate").value =
     t.getFullYear() + "-" + String(t.getMonth()+1).padStart(2,"0") + "-" + String(t.getDate()).padStart(2,"0");
